@@ -1,9 +1,13 @@
 import sys
 import binascii
-from three import decode
+from set1.three import decode
 
 #Hamming distances are edit distances are those not just xor?
-#Right, because that returns an integer, not the number of set bits.
+#Ah right, because that returns an integer, not the number of set bits.
+#Easy enough to just count results of a bitmask
+
+#Haha, had to rename this file because it interferes with cryptography.ciphers.base
+
 test1 = b'this is a test'
 test2 = b'wokka wokka!!!'
 expected = 37
