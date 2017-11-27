@@ -4,11 +4,12 @@ import binascii
 
 key = b'YELLOW SUBMARINE'
 defaultBackend = default_backend()
-with open(seven_ct.txt) as f:
+with open('seven_ct.txt') as f:
     ct = binascii.a2b_base64(f.read())
 
 cipher = Cipher(algorithms.AES(key), modes.ECB(), backend=defaultBackend)
 decryptor = cipher.decryptor()
-pt = decryptor.update(ct) + decryptor.finalize()
+pt = str(decryptor.update(ct) + decryptor.finalize()).split('\\n')
 
-print(pt)
+for line in pt:
+    print(line)

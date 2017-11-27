@@ -1,4 +1,4 @@
-from three import decode
+from set1.three import decode
 import binascii
 
 import pprint
