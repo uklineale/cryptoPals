@@ -18,7 +18,7 @@ def strToFreqDict(string):
     return freq
 
 # Returns fingerprint of string
-def strToFreq(string):
+def strToFingerprint(string):
     lowered = strToFreqDict(string.lower())
     return lowered.values()
 
@@ -30,6 +30,7 @@ def differenceBetweenFreqDicts(fd1, fd2):
         else:
             score += abs(float(fd2[c]) - float(fd1[c])) * 5
     return score
+
 
 def decode(ciphertext):
     encoded = binascii.unhexlify(ciphertext)
