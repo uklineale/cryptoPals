@@ -1,9 +1,8 @@
 from set1.sixth import guessBlockSize, hammingDist
 import math, binascii, sys
 
-def getBlocks(bStr):
-    blockSize = guessBlockSize(bStr)
-
+#EXTERN
+def getBlocks(bStr, blockSize):
     blocks = []
     for i in range(blockSize):
         start = i * blockSize
@@ -35,19 +34,18 @@ def averageHammingDistBetweenBlocks(blocks):
 
 if __name__ == "__main__":
     likelyEcb = ''
-    duplicateBlocks = 0
     minDist = sys.maxsize
 
     with open('eight_ct.txt','r') as f:
         for str in f.readlines():
             bStr = binascii.a2b_hex(str[:-1])
-            dist = averageHammingDistBetweenBlocks(getBlocks(bStr))
+            blockSize = guessBlockSize(bStr)
+            dist = averageHammingDistBetweenBlocks(getBlocks(bStr, blockSize))
             if dist < minDist:
                 minDist = dist
                 likelyEcb = str
 
     print(likelyEcb)
-    print(duplicateBlocks)
 
 
 
