@@ -1,0 +1,8 @@
+[package]
+name = "rust"
+version = "0.1.0"
+authors = ["Neel Kuila <neelk1123@gmail.com>"]
+
+[dependencies]
+base64 = "0.9.0"
+hex = "0.3.1"
