@@ -1,4 +1,4 @@
-from set1.sixth import guessBlockSize, hammingDist
+from python.set1.sixth import guessBlockSize, hammingDist
 import math, binascii, sys
 
 #EXTERN

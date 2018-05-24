@@ -3,12 +3,12 @@ from cryptography.hazmat.backends import default_backend
 import binascii
 
 
-def pycaDecryptECB(ct, key):
+def decryptEcb(ct, key):
     defaultBackend = default_backend()
 
     cipher = Cipher(algorithms.AES(key), modes.ECB(), backend=defaultBackend)
     decryptor = cipher.decryptor()
-    pt = str(decryptor.update(ct) + decryptor.finalize()).split('\\n')
+    pt = decryptor.update(ct) + decryptor.finalize()
     return pt
 
 
@@ -17,5 +17,5 @@ if __name__ == '__main__':
     with open('seven_ct.txt') as f:
         ct = binascii.a2b_base64(f.read())
 
-    pt = pycaDecryptECB(ct, key)
+    pt = decryptEcb(ct, key)
     print(pt)

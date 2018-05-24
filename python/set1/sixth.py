@@ -1,6 +1,6 @@
 import sys
 import binascii
-from set1.three import decode
+from python.set1.three import decode
 
 #Hamming distances are edit distances are those not just xor?
 #Ah right, because that returns an integer, not the number of set bits.
