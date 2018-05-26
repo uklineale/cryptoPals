@@ -1,10 +1,12 @@
 from python.set1.sixth import guessBlockSize, hammingDist
 import math, binascii, sys
 
-#EXTERN
-def getBlocks(bStr, blockSize):
+#EXTERNED AS HELL
+def getBlocks(bStr, blockSize=16):
     blocks = []
-    for i in range(blockSize):
+    carry = 0 if len(bStr) % blockSize == 0 else 1
+    numBlocks = (len(bStr) // blockSize) + carry
+    for i in range(numBlocks):
         start = i * blockSize
         end = start + blockSize
         blocks.append(bStr[start:end])
