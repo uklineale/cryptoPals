@@ -4,10 +4,10 @@ from python.set2.nine import pad_pkcs7, unpad_pkcs7
 import os
 import random as r
 
-def hidden_oracle(encryption_func, test_isCbc=None):
+def detect_ecb_or_cbc(encryption_func, test_isCbc=None):
     bStr = b'aaaaaaaaaaaaaaaaaaaaaaaaaa' * 20 #Low entropy will show up in ECB
     ct = encryption_func(bStr) if test_isCbc == None else encryption_func(bStr, test_isCbc)
-    if detect_entropy(ct) < .2:
+    if detect_entropy(ct) < .5:
         return 'ECB'
     else:
         return 'CBC'
@@ -52,5 +52,5 @@ if __name__ == '__main__':
     for i in range(100):
         test = r.randrange(0,2)
         expected = 'ECB' if test == 0 else 'CBC'
-        actual = hidden_oracle(crouching_cipher, test_isCbc=test)
+        actual = detect_ecb_or_cbc(crouching_cipher, test_isCbc=test)
         assert expected == actual

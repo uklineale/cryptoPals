@@ -7,3 +7,6 @@ def binary_assert_equals(bstr1, bstr2, printStats=False):
                 print("Byte {} \nExpected: {} | Actual: {}".format(i, bstr1[i], bstr2[i]))
 
     assert bstr1 == bstr2
+
+def get_block_number(i, blocksize):
+    return i // blocksize
