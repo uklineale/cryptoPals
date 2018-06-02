@@ -1,6 +1,6 @@
 from python.set2.eleven import detect_ecb_or_cbc
 from python.set2.ten import encryptEcb
-from python.set2.nine import pad_pkcs7
+from python.set2.nine import pad_pkcs7, unpad_pkcs7
 import os, binascii
 
 key = os.urandom(16)
@@ -23,11 +23,10 @@ def decrypt_oracle(encrypt_func):
     blocksize = find_block_size(encrypt_func)
     mode = detect_ecb_or_cbc(encrypt_func)
     if mode == 'ECB':
-        decrypted_str = ''
-
         secret_len = len(encrypt_func(b''))
         known_bytes = b''
 
+        new_byte = b''
         while len(known_bytes) < secret_len:
             new_byte = decrypt_byte(encrypt_func, blocksize, known_bytes)
             known_bytes += bytes([new_byte])
@@ -35,17 +34,21 @@ def decrypt_oracle(encrypt_func):
         return known_bytes
 
 def decrypt_byte(encrypt_func, blocksize, known_bytes):
-    shim = b'a' * (blocksize - (len(known_bytes) % blocksize) - 1)
-    byte_map = {}
+    # Space the decrypted byte
+    shim = b'A' * (blocksize - (len(known_bytes) % blocksize) - 1)
+    # Map of ciphertext to byte
+    stencils = {}
 
+    # Make a buuunch of stencils, see which one fits the next byte
     for i in range(256):
-        ct = encrypt_func(shim + known_bytes + bytes([i]))
-        byte_map[ct[0:len(shim) + len(known_bytes) + 1]] = i
-    ct = encrypt_func(shim + known_bytes)
-    actual = ct[0: len(shim) + len(known_bytes) + 1]
-    if actual in byte_map:
-        return byte_map[actual]
+        stencil = encrypt_func(shim + known_bytes + bytes([i]))
+        stencils[stencil[0:len(shim) + len(known_bytes) + 1]] = i
+
+    unencrypted = encrypt_func(shim)[0:len(shim) + len(known_bytes) + 1]
+    if unencrypted in stencils:
+        return stencils[unencrypted]
     return None
+
 
 def find_block_size(encrypt_func):
     lastBlock = len(encrypt_func(b'A'))
@@ -58,4 +61,4 @@ def find_block_size(encrypt_func):
 
 
 if __name__ == "__main__":
-    print(decrypt_oracle(encrypt))
+    print(unpad_pkcs7(decrypt_oracle(encrypt)))
