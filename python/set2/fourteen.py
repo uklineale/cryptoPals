@@ -3,17 +3,12 @@ import os, random, sys
 from python.set1.eight import getBlocks
 from python.set2.twelve import encrypt as encrypt12
 from python.set2.twelve import find_block_size
-from python.set2.ten import pad_pkcs7
 
 # Unknowns
 BLOCKSIZE = 16
 
 key = os.urandom(BLOCKSIZE)
 prepend_str = b'a' + os.urandom(random.randint(0, 100))
-
-# Knowns
-prepend_str_len = 0
-
 
 def decrypt(encrypt_func):
     blocksize = find_block_size(encrypt)
@@ -60,8 +55,9 @@ def decrypt_byte(encrypt_func, rand_info, target_padding, blocksize, known_bytes
         byte_map[guess_block] = guess
 
     # Match byte
-    if len(known_bytes) + 1 % 16 is 0: # Edge case, last block is all padding
-        actual = encrypt_func(rand_shim + target_shim)[-(len(guess_spacer) + 1 + blocksize):-blocksize]
+    if (len(known_bytes) + 1) % 16 == 0: # Edge case, last block is all padding
+        sans_pad = encrypt_func(rand_shim + target_shim)[:-blocksize]
+        actual = sans_pad[-(len(guess_spacer) + 1):]
     else:
         actual = encrypt_func(rand_shim + target_shim)[-(len(guess_spacer) + 1):]
     if actual in byte_map:
