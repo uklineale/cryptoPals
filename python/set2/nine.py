@@ -1,6 +1,6 @@
 # A common padding scheme is PKCS#7. Apparently
-def pad_pkcs7(plaintext, blockSize=16, paddingValue=b'\x04'):
-    numPaddingBytes = blockSize - (len(plaintext) % blockSize)
+def pad_pkcs7(plaintext, blocksize=16, paddingValue=b'\x04'):
+    numPaddingBytes = blocksize - (len(plaintext) % blocksize)
     return plaintext + (paddingValue * numPaddingBytes)
 
 def unpad_pkcs7(plaintext, paddingValue=b'\x04'):

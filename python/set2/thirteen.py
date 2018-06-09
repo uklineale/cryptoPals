@@ -47,6 +47,7 @@ def decrypt_profile(profile_ct):
     encoded_cookie = str(unpad_pkcs7(decryptEcb(profile_ct, key)))
     return decode_cookie(encoded_cookie)
 
+
 if __name__ == '__main__':
     expose_user_shim = 'EMAILmydudedb' #last block is b'user', we'll replace this block with our own
     admin_block_shim = 'tenChars--admin' + '\x04' * 11 # second block is payload
