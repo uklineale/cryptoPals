@@ -10,3 +10,13 @@ def binary_assert_equals(bstr1, bstr2, printStats=False):
 
 def get_block_number(i, blocksize):
     return i // blocksize
+
+# TODO: Do you really only use this on decrypted pt?
+def unpad_pcks7(pt, blocksize=16):
+    padding = pt[-1]
+    pad_len = blocksize if padding == b'\x00' else ord(padding)
+    for i in range(len(pt) - 1, len(pt) - pad_len, -1):
+        if pt[i] != padding:
+            raise Exception("Bad PKCS#7 Padding")
+    return pt.strip(padding)
+

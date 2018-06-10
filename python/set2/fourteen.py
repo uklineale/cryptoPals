@@ -38,8 +38,11 @@ def decrypt_byte(encrypt_func, rand_info, target_padding, blocksize, known_bytes
     # Prepend this shim to the target string to position the next unkown byte of ct
     target_shim = b'\x03' * (target_padding + (len(known_bytes) % blocksize) + 1)
 
+    # Recreate PKCS#7 padding
+    pad_value = blocksize - (len(known_bytes) % blocksize) -1
+
     # The blocks containing the guess without the first byte
-    guess_spacer = known_bytes + b'\x04' * (blocksize - (len(known_bytes) % blocksize) - 1)
+    guess_spacer = known_bytes + bytes([pad_value]) * (blocksize - (len(known_bytes) % blocksize) - 1)
 
     # Start of payload
     payload_start = rand_info[0]
