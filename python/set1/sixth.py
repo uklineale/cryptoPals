@@ -1,18 +1,17 @@
 import sys
 import binascii
-from set1.three import decode
+from python.set1.three import decode
 
 #Hamming distances are edit distances are those not just xor?
 #Ah right, because that returns an integer, not the number of set bits.
 #Easy enough to just count results of a bitmask
 
-#Haha, had to rename this file because it interferes with cryptography.ciphers.base
+#Haha, had to rename this file because 'six' interferes with cryptography.ciphers.base
 
 test1 = b'this is a test'
 test2 = b'wokka wokka!!!'
 expected = 37
-with open('s1c06_ciphertext.txt','r') as f:
-    target = binascii.a2b_base64(f.read())
+
 
 def numberSetBits(i):
     setBits = 0
@@ -26,7 +25,7 @@ def hammingDist(bStr0, bStr1):
     dist = sum([numberSetBits(val) for val in xors])
     return dist
 
-def guessKeySize(ct):
+def guessBlockSize(ct):
     keyLen_minDist = [0, sys.maxsize]
     for kl in range(2,41):
         #avg of edit dist between 4 blocks
@@ -63,19 +62,22 @@ def repeatingKeyXor(bStr, bKey):
     return bytes(xor)
 
 if (__name__ == '__main__'):
-    print(hammingDist(test1, test2) == expected)
+    with open('sixth_ct.txt','r') as f:
+        target = binascii.a2b_base64(f.read())
 
-    keySize = guessKeySize(target)
-    print('Key size: ' + str(keySize))
+        print(hammingDist(test1, test2) == expected)
 
-    blocks = transposeBlocks(target, keySize)
-    print(type(blocks))
+        keySize = guessBlockSize(target)
+        print('Key size: ' + str(keySize))
 
-    key = decodeTransposedBlocks(blocks)
-    print(key)
+        blocks = transposeBlocks(target, keySize)
+        print(type(blocks))
 
-    plainText = repeatingKeyXor(target, key.encode('ascii'))
-    print(plainText.decode('ascii'))
+        key = decodeTransposedBlocks(blocks)
+        print(key)
+
+        plainText = repeatingKeyXor(target, key.encode('ascii'))
+        print(plainText.decode('ascii'))
 
 
 
