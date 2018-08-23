@@ -20,7 +20,6 @@ pub fn xor_hex(hex1: &str, hex2: &str) -> String {
 }
 
 
-
 #[cfg(test)]
 mod tests {
     use super::*;

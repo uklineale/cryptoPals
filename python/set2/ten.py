@@ -4,7 +4,7 @@ from python.set2.nine import pad_pkcs7, unpad_pkcs7
 from python.set1.seven import decryptEcb
 from python.set1.eight import getBlocks
 from python.set1.two import xor
-from python.util import binary_assert_equals
+from python.util.util import binary_assert_equals
 import binascii
 
 def encryptEcb(pt, key):

@@ -8,6 +8,7 @@ def decryptEcb(ct, key):
 
     cipher = Cipher(algorithms.AES(key), modes.ECB(), backend=defaultBackend)
     decryptor = cipher.decryptor()
+
     pt = decryptor.update(ct) + decryptor.finalize()
     return pt
 

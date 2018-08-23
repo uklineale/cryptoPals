@@ -1,3 +1,5 @@
+EXCEPTION_MESSAGE = "Bad PKCS#7 Padding"
+
 # A common padding scheme is PKCS#7. Apparently
 def pad_pkcs7(plaintext, blocksize=16):
     padding = blocksize - (len(plaintext) % blocksize)
@@ -6,10 +8,14 @@ def pad_pkcs7(plaintext, blocksize=16):
 
 def unpad_pkcs7(plaintext, blocksize=16):
     padding = plaintext[-1]
-    pad_len = padding
-    for i in range(len(plaintext) - 1, len(plaintext) - pad_len, -1):
-        if plaintext[i] != padding:
-            raise Exception("Bad PKCS#7 Padding")
+
+    if padding > blocksize:
+        raise Exception(EXCEPTION_MESSAGE)
+
+    for char in plaintext[-padding:]:
+        if char != padding:
+            raise Exception(EXCEPTION_MESSAGE)
+
     return plaintext.strip(bytes([padding]))
 
 
