@@ -1,9 +1,9 @@
+from python.common.pad import pad_pkcs7, unpad_pkcs7
 from python.set1.eight import getBlocks
 import binascii, random, os
 
 from python.set1.two import xor
 from python.set2.ten import decryptCbc, encryptCbc
-from python.set2.nine import pad_pkcs7, unpad_pkcs7
 
 BLOCKSIZE = 16
 key = os.urandom(BLOCKSIZE)
@@ -70,18 +70,6 @@ def crack(ct, iv, blocksize=16):
 
     return bytes(pt)
 
-
-
-
-'''
-:param1  - a bytearray
-:param2  - another bytearray
-:returns - bytearray of xored values
-'''
-def xor(ba1, ba2):
-    assert len(ba1) == len(ba2)
-    xored_ba = bytearray([x ^ y for x,y in zip(ba1, ba2)])
-    return xored_ba
 
 
 # Can't do first block PSYCH, we're given that because chops

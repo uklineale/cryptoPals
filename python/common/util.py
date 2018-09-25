@@ -8,10 +8,7 @@ def binary_assert_equals(bstr1, bstr2, printStats=False):
 
     assert bstr1 == bstr2
 
-def get_block_number(i, blocksize):
-    return i // blocksize
 
-# TODO: Do you really only use this on decrypted pt?
 def unpad_pcks7(pt, blocksize=16):
     padding = pt[-1]
     pad_len = blocksize if padding == b'\x00' else ord(padding)
@@ -19,4 +16,15 @@ def unpad_pcks7(pt, blocksize=16):
         if pt[i] != padding:
             raise Exception("Bad PKCS#7 Padding")
     return pt.strip(padding)
+
+
+'''
+:param1  - a bytearray
+:param2  - another bytearray
+:returns - bytearray of xored values
+'''
+def xor(ba1, ba2):
+    assert len(ba1) == len(ba2)
+    xored_ba = bytearray([x ^ y for x,y in zip(ba1, ba2)])
+    return xored_ba
 
