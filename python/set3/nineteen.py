@@ -12,6 +12,8 @@ from python.common.util import xor
 
 if __name__ == "__main__":
     key = os.urandom(16)
+
+    # Works for both 'nineteen.txt' and 'twenty.txt'
     with open('twenty.txt') as f:
         cts = [xcryptCtr(binascii.a2b_base64(l.strip('\n')), key, 1) for l in f.readlines()]
         min = sys.maxsize
@@ -34,7 +36,7 @@ if __name__ == "__main__":
 
         grouped_pt = []
         for group in grouped_bytes:
-            scores = [] # list of tuples
+            scores = []
             for guess in range(256):
                 guess_stream = bytes([guess]) * len(group)
                 possible_pt = bytes(xor(group, bytearray(guess_stream)))
