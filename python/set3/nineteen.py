@@ -59,17 +59,3 @@ if __name__ == "__main__":
 
         for pt in pts:
             print(pt)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
