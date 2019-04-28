@@ -1,6 +1,8 @@
+#[crate_id = "commons"]
+#[crate_type = "lib"]
+
 extern crate hex;
 extern crate base64;
-mod mersenne_twister;
 
 pub fn hex_to_base64(s: &str) -> String {
     let bytes = hex::decode(s).unwrap();
@@ -11,11 +13,12 @@ pub fn base64_to_hex(s: &str) -> String {
     let bytes = base64::decode(s).unwrap();
     hex::encode(&bytes)
 }
-//
-//pub fn xor_hex(hex1: &str, hex2: &str) -> String {
-//    if hex1.len() != hex2.len() { }
-//    let bytes =
-//}
+
+pub fn xor_hex(hex1: &str, hex2: &str) -> String {
+    if hex1.len() != hex2.len() { }
+    let bytes =
+}
+
 
 
 #[cfg(test)]
@@ -41,5 +44,9 @@ mod tests {
         let expected_hex = "49276d206b696c6c696e6720796f757220627261696e206c696b65206120706f69736f6e6f7573206d757368726f6f6d";
 
         assert_eq!(base64_to_hex(b64_str), expected_hex)
+    }
+
+    fn test_xor() {
+
     }
 }

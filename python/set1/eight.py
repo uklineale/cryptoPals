@@ -1,10 +1,17 @@
-import binascii
-import math
-import sys
-
-from python.common.block import getBlocks
 from python.set1.sixth import guessBlockSize, hammingDist
+import math, binascii, sys
 
+#EXTERNED AS HELL
+def getBlocks(bStr, blocksize=16):
+    blocks = []
+    carry = 0 if len(bStr) % blocksize == 0 else 1
+    numBlocks = (len(bStr) // blocksize) + carry
+    for i in range(numBlocks):
+        start = i * blocksize
+        end = start + blocksize
+        blocks.append(bStr[start:end])
+
+    return blocks
 
 # Both work, but counting repeating blocks is simple
 def countRepeatedBlocks(blocks):
