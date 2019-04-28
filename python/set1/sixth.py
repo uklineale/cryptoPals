@@ -71,7 +71,6 @@ if (__name__ == '__main__'):
         print('Key size: ' + str(keySize))
 
         blocks = transposeBlocks(target, keySize)
-        print(type(blocks))
 
         key = decodeTransposedBlocks(blocks)
         print(key)
