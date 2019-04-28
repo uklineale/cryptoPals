@@ -29,6 +29,7 @@ fn main() {
     if let Some(x) = answer {
         let mut clone_mt = MersenneTwister64::new(x);
         clone_mt.next_u64();
+
         for _ in 0..1000 {
             assert_eq!(mt.next_u64(), clone_mt.next_u64());
         }
@@ -40,7 +41,6 @@ fn main() {
 
 fn crack_mt_timestamp(output: u64, start: u64) -> Option<u64> {
     let iterations = 1000*2;
-    println!("Trying from {} to {}", start - iterations, start);
 
     for i in 0..iterations {
         let guess = start - i;

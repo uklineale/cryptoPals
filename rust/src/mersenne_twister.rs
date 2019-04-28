@@ -21,6 +21,8 @@ const DEFAULT_SEED: u64 = 5489;
 const LOWER_MASK: Wrapping<u64> = Wrapping((1 << R) - 1);
 const UPPER_MASK: Wrapping<u64> = Wrapping(!(LOWER_MASK.0));
 
+const ONES: u64 = 0xFFFFFFFFFFFFFFFF;
+
 // Intermediate constants
 const MT_SIZE: usize = N as usize;
 
@@ -44,6 +46,19 @@ impl MersenneTwister64 {
         mt
     }
 
+    pub fn clone_from_state(state: &[u64]) -> MersenneTwister64 {
+        let mut mt = MersenneTwister64::new_unseeded();
+
+        let mut casted_state: [Wrapping<u64>; N] = [Wrapping(0); N];
+        for i in 0..casted_state.len() {
+            casted_state[i] = Wrapping(state[i]);
+        }
+
+        mt.mt = casted_state;
+        mt.index = N;
+        mt
+    }
+
     pub fn new_default_seed() -> MersenneTwister64 {
         let mut mt = MersenneTwister64::new_unseeded();
         mt.seed_mt(DEFAULT_SEED);
@@ -61,6 +76,68 @@ impl MersenneTwister64 {
         self.mt[0] = Wrapping(seed);
         for i in 1..N {
             self.mt[i] = F * (self.mt[i-1] ^ (self.mt[i-1] >> (W-2))) + Wrapping(i as u64);
+        }
+    }
+
+    pub fn next_u64(&mut self) -> u64{
+        if self.index == N {
+            self.twist();
+        }
+
+        // Temper function
+        let mut y = self.mt[self.index];
+
+        y ^= (y >> U) & D;
+        y ^= (y << S) & B;
+        y ^= (y << T) & C;
+        y ^= y >> L;
+
+
+        self.index += 1;
+        y.0
+    }
+
+    pub fn untemper(a: u64) -> u64 {
+        MersenneTwister64::distemper(a)
+    }
+
+    // I just like the rabies joke, call me mad
+    pub fn distemper(a: u64) -> u64 {
+        let mut out = a;
+
+        MersenneTwister64::untemperRightShift(&mut out, L as i32, ONES);
+        MersenneTwister64::untemperLeftShift(&mut out, T as i32, C.0);
+        MersenneTwister64::untemperLeftShift(&mut out, S as i32, B.0);
+        MersenneTwister64::untemperRightShift(&mut out, U as i32, D.0);
+
+        out
+    }
+
+    fn untemperLeftShift(tempered: &mut u64, shift: i32, mask: u64) {
+        let orig = *tempered;
+        let word_size = W as i32;
+        let max_index = (word_size / shift) + 1;
+        for i in 1..max_index { // First (shift) bytes are untempered, that's how we're exploiting
+            let mask_part = mask & (ONES << (i * shift));
+            *tempered ^= (*tempered << shift) & mask_part;
+            if (i != max_index - 1) { // The last iteration we have the whole untempered val, no need to unset/reset
+                *tempered &= ONES >> (word_size - ((i + 1) * shift)); // We've double set the top bits, unset them
+                *tempered ^= orig & (ONES << ((i + 1) * shift)); // Reset the top bits to original
+            }
+        }
+    }
+
+    fn untemperRightShift(tempered: &mut u64, shift: i32, mask: u64) {
+        let orig = *tempered;
+        let word_size = W as i32;
+        let max_index = (word_size / shift) + 1;
+        for i in 1..max_index {
+            let mask_part = mask & (ONES >> (i * shift));
+            *tempered ^= (*tempered >> shift) & mask_part;
+            if (i != max_index - 1) {
+                *tempered &= ONES << (word_size - ((i + 1) * shift));
+                *tempered ^= orig & (ONES >> ((i + 1) * shift));
+            }
         }
     }
 
@@ -97,20 +174,6 @@ impl MersenneTwister64 {
         self.mt[0] = Wrapping(1 << (W-1) as u64);
     }
 
-    pub fn next_u64(&mut self) -> u64{
-        if self.index == N {
-            self.twist();
-        }
-
-        let mut y = self.mt[self.index];
-        y ^= (y >> U) & D;
-        y ^= (y << S) & B;
-        y ^= (y << T) & C;
-        y ^= y >> L;
-
-        self.index += 1;
-        y.0
-    }
 
     pub fn twist(&mut self) {
         for i in 0..(N-M) {
@@ -127,6 +190,11 @@ impl MersenneTwister64 {
         self.mt[N-1] = self.mt[M-1] ^ (x >> 1) ^ MAGIC[(x.0 & 0x1) as usize];
 
         self.index = 0;
+    }
+
+    // Testing util for untempter
+    pub fn dump_state(&mut self) -> [Wrapping<u64>; N]{
+        self.mt
     }
 }
 
@@ -478,6 +546,7 @@ fn generate_array_seed_expected() -> [u64; 1000] {
         994412663058993407];
 }
 
+
 #[test]
 fn test_default_seed() {
     // from https://oeis.org/A221558/list
@@ -489,7 +558,7 @@ fn test_default_seed() {
         5058016125798318033,10349215569089701407];
 
 
-    let mut mt = MersenneTwister64::new();
+    let mut mt = MersenneTwister64::new_default_seed();
     for i in 0..expected.len() {
         assert_eq!(mt.next_u64(), expected[i]);
     }
