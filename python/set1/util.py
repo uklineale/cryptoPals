@@ -31,23 +31,8 @@ def differenceBetweenFreqDicts(fd1, fd2):
             score += abs(float(fd2[c]) - float(fd1[c])) * 5
     return score
 
-def strToFreqDict(string):
-    length = len(string)
-    lowered = string.lower()
-    freq = {letter: lowered.count(letter)/length for letter in lowered}
-    return freq
 
-# First attempt at scoring function
-def scoreForEnglish(decodedStr):
-    score = 0
-    freqDict = strToFreqDict(decodedStr)
-    for c in freqDict.keys():
-        if c not in freqs.keys():
-            score += 100
-        else:
-            score += abs(float(freqs[c]) - freqDict[c]) * 5
-    return score
+def decode(ciphertext):
+    encoded = binascii.unhexlify(ciphertext)
+    return str(encoded)
 
-# A better, simpler approach at scoring
-def scoreForPlaintext(str):
-    return len([c for c in str if c in alpha or c is ' '])/len(str)
