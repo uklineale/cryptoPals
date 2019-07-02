@@ -35,4 +35,5 @@ fn main() {
     }
 
     // Aw. Yeah.
+    println!("Success!")
 }
