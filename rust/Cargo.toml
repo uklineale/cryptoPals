@@ -10,6 +10,7 @@ hex = "0.3.1"
 rand = "0.4.5"
 real_mt = {version="1.1.1", package="mersenne_twister"}
 chrono = "0.4.6"
+openssl = "0.10.25"
 
 [[bin]]
 name = "s3c22"
@@ -18,4 +19,8 @@ path = "src/s3c22.rs"
 [[bin]]
 name = "s3c23"
 path = "src/s3c23.rs"
+
+[[bin]]
+name = "s4c25"
+path = "src/s4c25.rs"
 

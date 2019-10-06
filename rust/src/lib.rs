@@ -11,11 +11,6 @@ pub fn base64_to_hex(s: &str) -> String {
     let bytes = base64::decode(s).unwrap();
     hex::encode(&bytes)
 }
-//
-//pub fn xor_hex(hex1: &str, hex2: &str) -> String {
-//    if hex1.len() != hex2.len() { }
-//    let bytes =
-//}
 
 
 #[cfg(test)]
