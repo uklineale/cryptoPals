@@ -1,11 +1,11 @@
-use openssl::symm::{encrypt, Cipher, decrypt};
-use rand::Rng;
-use openssl::error::ErrorStack;
-use std::str::from_utf8;
+use crypto_pals::num_blocks;
 use hex::decode;
 use hex::encode;
+use openssl::error::ErrorStack;
+use openssl::symm::{decrypt, encrypt, Cipher};
+use rand::Rng;
 use std::io::Cursor;
-use crypto_pals::num_blocks;
+use std::str::from_utf8;
 
 pub struct MyCiphers {
     core: Cipher,
@@ -15,7 +15,7 @@ pub struct MyCiphers {
 
 impl MyCiphers {
     pub fn init() -> MyCiphers {
-        let key= "YELLOW SUBMARINE".to_string();
+        let key = "YELLOW SUBMARINE".to_string();
         MyCiphers {
             core: Cipher::aes_128_ecb(),
             block_size: key.len(),
@@ -33,9 +33,8 @@ impl MyCiphers {
 
     pub fn xcryptCtr(&self, text: &[u8], nonce: u64) -> Vec<u8> {
         let mut counter: u64 = 0;
-        let mut result: Vec<u8> = vec!();
+        let mut result: Vec<u8> = vec![];
         let num_blocks = num_blocks(self.key.as_bytes(), text);
-
 
         for block_num in 0..num_blocks {
             // Is every bit equally likely (statistically)?
@@ -62,17 +61,15 @@ impl MyCiphers {
         self.encryptEcb(nonce_and_counter.as_ref())
     }
 
-
     pub fn encryptEcb(&self, pt: &[u8]) -> Vec<u8> {
         // todo figure out Result handling
-        encrypt(self.core, self.key.as_bytes(), None,  &pt).unwrap()
+        encrypt(self.core, self.key.as_bytes(), None, &pt).unwrap()
     }
 
     pub fn decryptEcb(self, ct: &[u8]) -> Vec<u8> {
         // todo figure out Result handling
         decrypt(self.core, self.key.as_bytes(), None, &ct).unwrap()
     }
-
 }
 
 #[test]

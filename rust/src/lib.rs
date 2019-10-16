@@ -1,5 +1,5 @@
-extern crate hex;
 extern crate base64;
+extern crate hex;
 mod mersenne_twister;
 
 pub fn hex_to_base64(s: &str) -> String {
@@ -19,7 +19,6 @@ pub fn num_blocks(key: &[u8], text: &[u8]) -> usize {
     }
     num_blocks
 }
-
 
 #[cfg(test)]
 mod tests {
