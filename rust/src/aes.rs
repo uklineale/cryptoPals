@@ -1,21 +1,25 @@
 use openssl::symm::{encrypt, Cipher, decrypt};
 use rand::Rng;
 use openssl::error::ErrorStack;
-
-const UPPER_64_BITS: u128 = 0x11111111111111110000000000000000;
-const LOWER_64_BITS: u128 = 0x00000000000000001111111111111111;
-
+use std::str::from_utf8;
+use hex::decode;
+use hex::encode;
+use std::io::Cursor;
+use crypto_pals::num_blocks;
 
 pub struct MyCiphers {
     core: Cipher,
     key: String,
+    block_size: usize,
 }
 
 impl MyCiphers {
     pub fn init() -> MyCiphers {
+        let key= "YELLOW SUBMARINE".to_string();
         MyCiphers {
             core: Cipher::aes_128_ecb(),
-            key: "YELLOW SUBMARINE".to_string(),
+            block_size: key.len(),
+            key,
         }
     }
 
@@ -27,34 +31,45 @@ impl MyCiphers {
         &self.key
     }
 
-    pub fn encryptCtr(&self, pt: String) -> String {
-        let mut rng = rand::thread_rng();
+    pub fn xcryptCtr(&self, text: &[u8], nonce: u64) -> Vec<u8> {
+        let mut counter: u64 = 0;
+        let mut result: Vec<u8> = vec!();
+        let num_blocks = num_blocks(self.key.as_bytes(), text);
 
-        // Theoretically all bits are equally random?
-        let nonce: u128 = rng.next_u64() as u128;
-        let mut counter: u128 = 0x0;
-
-        let mut num_blocks = pt.len() / self.key.len();
-        if pt.len() % self.key.len() > 0 {
-            num_blocks += 1;
-        }
 
         for block in 0..num_blocks {
-            let key_stream = (nonce & UPPER_64_BITS) & (counter & LOWER_64_BITS);
+            // Is every bit equally likely (statistically)?
+            let keystream = self.generateKeystream(nonce, counter, self.key.as_bytes().to_vec());
             counter += 1;
-            self.encryptEcb(&key_stream.to_be_bytes());
+            let block_start = block * self.block_size;
+
+            let mut crypted: Vec<u8> = keystream
+                .iter()
+                .zip(text[block_start..block_start + self.block_size].iter())
+                .map(|bytes: (&u8, &u8)| -> u8 { bytes.0 ^ bytes.1 })
+                .collect();
+
+            result.append(&mut crypted);
         }
+        println!("len of result: {}", result.len());
 
-        "dud".to_string()
+        return result;
+    }
+
+    pub fn generateKeystream(&self, nonce: u64, ctr: u64, key: Vec<u8>) -> Vec<u8> {
+        let nonce_and_counter = [nonce.to_le_bytes(), ctr.to_le_bytes()].concat();
+        self.encryptEcb(nonce_and_counter.as_ref())
     }
 
 
-    pub fn encryptEcb(&self, pt: &[u8]) -> Result<Vec<u8>, ErrorStack> {
-        encrypt(self.core, self.key.as_bytes(), None,  &pt)
+    pub fn encryptEcb(&self, pt: &[u8]) -> Vec<u8> {
+        // todo figure out Result handling
+        encrypt(self.core, self.key.as_bytes(), None,  &pt).unwrap()
     }
 
-    pub fn decryptEcb(self, ct: &[u8]) -> Result<Vec<u8>, ErrorStack> {
-        decrypt(self.core, self.key.as_bytes(), None, &ct)
+    pub fn decryptEcb(self, ct: &[u8]) -> Vec<u8> {
+        // todo figure out Result handling
+        decrypt(self.core, self.key.as_bytes(), None, &ct).unwrap()
     }
 
 }

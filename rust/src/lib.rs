@@ -12,15 +12,18 @@ pub fn base64_to_hex(s: &str) -> String {
     hex::encode(&bytes)
 }
 
+pub fn num_blocks(key: &[u8], text: &[u8]) -> usize {
+    let mut num_blocks = text.len() / key.len();
+    if text.len() % key.len() > 0 {
+        num_blocks += 1;
+    }
+    num_blocks
+}
+
 
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    #[test]
-    fn it_works() {
-        assert_eq!(2 + 2, 4);
-    }
 
     #[test]
     fn test_hex_to_base64() {
@@ -36,5 +39,17 @@ mod tests {
         let expected_hex = "49276d206b696c6c696e6720796f757220627261696e206c696b65206120706f69736f6e6f7573206d757368726f6f6d";
 
         assert_eq!(base64_to_hex(b64_str), expected_hex)
+    }
+
+    #[test]
+    fn test_num_blocks() {
+        let pt = b"this is 32 charsthis is 32 chars";
+        assert_eq!(num_blocks(b"YELLOW SUBMARINE", pt), 2);
+
+        let pt = b"this is 17 chars!";
+        assert_eq!(num_blocks(b"YELLOW SUBMARINE", pt), 2);
+
+        let pt = b"this is 15 char";
+        assert_eq!(num_blocks(b"YELLOW SUBMARINE", pt), 1);
     }
 }
