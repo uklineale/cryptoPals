@@ -37,15 +37,16 @@ impl MyCiphers {
         let num_blocks = num_blocks(self.key.as_bytes(), text);
 
 
-        for block in 0..num_blocks {
+        for block_num in 0..num_blocks {
             // Is every bit equally likely (statistically)?
             let keystream = self.generateKeystream(nonce, counter, self.key.as_bytes().to_vec());
             counter += 1;
-            let block_start = block * self.block_size;
+            let block_start = block_num * self.block_size;
+            let block = &text[block_start..block_start + self.block_size];
 
             let mut crypted: Vec<u8> = keystream
                 .iter()
-                .zip(text[block_start..block_start + self.block_size].iter())
+                .zip(block.iter())
                 .map(|bytes: (&u8, &u8)| -> u8 { bytes.0 ^ bytes.1 })
                 .collect();
 
@@ -75,6 +76,27 @@ impl MyCiphers {
 }
 
 #[test]
-fn test_encrypt_ecb() {
+fn test_encrypt_decrypt_ecb() {
     let cipher = MyCiphers::init();
+
+    let pt = b"this is 32 charsthis is 32 chars";
+    let ct = cipher.encryptEcb(pt);
+    let result = cipher.decryptEcb(&ct);
+
+    assert_eq!(pt, &result[..]);
+}
+
+#[test]
+fn test_encrypt_decrypt_ctr() {
+    let cipher = MyCiphers::init();
+    let mut rng = rand::thread_rng();
+    let nonce: u64 = rng.next_u64();
+
+    // 128 bytes
+    let pt = b"this is 32 charsthis is 32 chars";
+
+    let ct = cipher.xcryptCtr(pt, nonce);
+    let result = cipher.xcryptCtr(&ct, nonce);
+
+    assert_eq!(pt, &result[..]);
 }
