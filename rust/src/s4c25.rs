@@ -2,7 +2,7 @@ mod aes;
 
 use aes::MyCiphers;
 use hex::{encode, decode};
-use rand::Rng;
+use rand::{Rng, RngCore};
 use std::fs;
 use std::str::from_utf8;
 use std::borrow::BorrowMut;
