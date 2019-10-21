@@ -1,6 +1,7 @@
 extern crate rand;
 mod mersenne_twister;
 
+use crate::rand::RngCore;
 use self::mersenne_twister::MersenneTwister64;
 use rand::Rng;
 
@@ -35,4 +36,5 @@ fn main() {
     }
 
     // Aw. Yeah.
+    println!("Success!")
 }

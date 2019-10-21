@@ -119,8 +119,7 @@ impl MersenneTwister64 {
             // First (shift) bytes are untempered, that's how we're exploiting
             let mask_part = mask & (ONES << (i * shift));
             *tempered ^= (*tempered << shift) & mask_part;
-            if (i != max_index - 1) {
-                // The last iteration we have the whole untempered val, no need to unset/reset
+            if i != max_index - 1 { // The last iteration we have the whole untempered val, no need to unset/reset
                 *tempered &= ONES >> (word_size - ((i + 1) * shift)); // We've double set the top bits, unset them
                 *tempered ^= orig & (ONES << ((i + 1) * shift)); // Reset the top bits to original
             }
@@ -134,7 +133,7 @@ impl MersenneTwister64 {
         for i in 1..max_index {
             let mask_part = mask & (ONES >> (i * shift));
             *tempered ^= (*tempered >> shift) & mask_part;
-            if (i != max_index - 1) {
+            if i != max_index - 1 {
                 *tempered &= ONES << (word_size - ((i + 1) * shift));
                 *tempered ^= orig & (ONES >> ((i + 1) * shift));
             }
