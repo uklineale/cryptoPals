@@ -3,7 +3,7 @@ use hex::decode;
 use hex::encode;
 use openssl::error::ErrorStack;
 use openssl::symm::{decrypt, encrypt, Cipher};
-use rand::Rng;
+use rand::{Rng, RngCore};
 use std::io::Cursor;
 use std::str::from_utf8;
 
@@ -48,7 +48,7 @@ impl MyCiphers {
         keystream
             .iter()
             .zip(text.iter())
-            .map(|bytes: (&u8, &u8)| -> u8 { bytes.0 ^ bytes.1 })
+            .map(|(x,y)| x ^ y)
             .collect()
     }
 
@@ -85,15 +85,11 @@ impl MyCiphers {
         let end_offset = offset + new_text.len();
         let keystream_subset = &keystream[offset..end_offset];
 
-        let mut new_ct: Vec<u8> = new_text.to_vec()
-            .iter()
-            .zip(keystream_subset.iter())
-            .map(|bytes: (&u8, &u8)| -> u8 { bytes.0 ^ bytes.1 })
-            .collect();
-
-        for i in 0..new_text.len() {
-            ct[i+offset] = new_ct[i];
-        }
+        new_text.iter()
+            .zip(keystream_subset)
+            .map(|(x,y)|x ^ y)
+            .enumerate()
+            .for_each(|(i, val)| ct[i+offset]=val);
 
         return ct.to_vec();
     }

@@ -4,13 +4,13 @@ use aes::MyCiphers;
 use hex::{encode, decode};
 use rand::{Rng, RngCore};
 use std::fs;
-use std::str::from_utf8;
+use std::string::String;
 use std::borrow::BorrowMut;
 
 // This is inefficient. You can set the plaintext to the ciphertext,
 // then CTR will decrypt it for you!
 pub fn crack_random_access_ctr(cipher: &MyCiphers, ct: &mut [u8], nonce: u64) -> Vec<u8> {
-    let mut cracked: Vec<u8> = vec!();
+    let mut cracked = vec!();
 
     for i in 0..ct.len() {
         let target = ct[i].clone();
@@ -41,5 +41,5 @@ pub fn main() {
     let mut ct = c.xcryptCtr(pt, nonce);
     let ct_clone = ct.clone();
     let result = c.edit(&mut ct, nonce, 0,  &ct_clone);
-    println!("{}", from_utf8(&result).unwrap());
+    println!("{}", String::from_utf8_lossy(&result));
 }

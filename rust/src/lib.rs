@@ -13,11 +13,12 @@ pub fn base64_to_hex(s: &str) -> String {
 }
 
 pub fn num_blocks(key: &[u8], text: &[u8]) -> usize {
-    let mut num_blocks = text.len() / key.len();
+    let num_blocks = text.len() / key.len();
     if text.len() % key.len() > 0 {
-        num_blocks += 1;
+        num_blocks + 1
+    } else {
+        num_blocks
     }
-    num_blocks
 }
 
 #[cfg(test)]
