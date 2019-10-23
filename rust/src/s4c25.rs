@@ -26,6 +26,20 @@ pub fn crack_random_access_ctr(cipher: &MyCiphers, ct: &mut [u8], nonce: u64) ->
     return cracked;
 }
 
+pub fn get_ct(cipher: &MyCiphers, nonce: u64) -> Vec<u8> {
+    let default_cipher = MyCiphers::init_default();
+
+    let encoded_ct = fs::read_to_string("src/files/s4c25").expect("Can't read file.");
+    let trimmed: String = encoded_ct.chars()
+        .filter(|c| *c != '\n')
+        .collect();
+    let decoded_ct = base64::decode(&trimmed).expect("Can't decode file");
+
+    let pt = default_cipher.decryptEcb(&decoded_ct);
+    cipher.xcryptCtr(&pt, nonce)
+}
+
+
 pub fn main() {
     let mut rng = rand::thread_rng();
     let nonce: u64 = rng.next_u64();
@@ -36,10 +50,11 @@ pub fn main() {
 
     let c = MyCiphers::init(key);
 
-    let pt = b"This is a secret. Have I successfully decrypted this?";
-
-    let mut ct = c.xcryptCtr(pt, nonce);
+//    let pt = b"This is a secret. Have I successfully decrypted this?";
+    let mut ct = get_ct(&c, nonce);
     let ct_clone = ct.clone();
+
+
     let result = c.edit(&mut ct, nonce, 0,  &ct_clone);
     println!("{}", String::from_utf8_lossy(&result));
 }
