@@ -4,7 +4,7 @@ extern crate rand;
 mod mersenne_twister;
 
 use self::mersenne_twister::MersenneTwister64;
-use chrono::{DateTime, Duration, Utc};
+use chrono::{Duration, Utc};
 use rand::Rng;
 
 fn main() {

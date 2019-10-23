@@ -35,7 +35,7 @@ fn decrypt(key: u64, ct: &String) -> String {
     match ptResult {
         Ok(pt) => {
             return pt;
-        }, Err(e) => {
+        }, Err(_e) => {
             // invalid ct
             return "".to_string();
         },

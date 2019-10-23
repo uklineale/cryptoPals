@@ -1,11 +1,11 @@
 mod aes;
 
 use aes::MyCiphers;
-use hex::{encode, decode};
-use rand::{Rng, RngCore};
+
+use rand::{RngCore};
 use std::fs;
 use std::string::String;
-use std::borrow::BorrowMut;
+
 
 // This is inefficient. You can set the plaintext to the ciphertext,
 // then CTR will decrypt it for you!
@@ -35,8 +35,8 @@ pub fn get_ct(cipher: &MyCiphers, nonce: u64) -> Vec<u8> {
         .collect();
     let decoded_ct = base64::decode(&trimmed).expect("Can't decode file");
 
-    let pt = default_cipher.decryptEcb(&decoded_ct);
-    cipher.xcryptCtr(&pt, nonce)
+    let pt = default_cipher.decrypt_ecb(&decoded_ct);
+    cipher.xcrypt_ctr(&pt, nonce)
 }
 
 
@@ -50,10 +50,8 @@ pub fn main() {
 
     let c = MyCiphers::init(key);
 
-//    let pt = b"This is a secret. Have I successfully decrypted this?";
     let mut ct = get_ct(&c, nonce);
     let ct_clone = ct.clone();
-
 
     let result = c.edit(&mut ct, nonce, 0,  &ct_clone);
     println!("{}", String::from_utf8_lossy(&result));
