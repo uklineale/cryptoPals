@@ -1,7 +1,7 @@
 extern crate rand;
 extern crate byteorder;
 extern crate hex;
-mod mersenne_twister;
+pub mod mersenne_twister;
 
 use rand::Rng;
 use rand::RngCore;
@@ -35,7 +35,7 @@ fn decrypt(key: u64, ct: &String) -> String {
     match ptResult {
         Ok(pt) => {
             return pt;
-        }, Err(e) => {
+        }, Err(_e) => {
             // invalid ct
             return "".to_string();
         },

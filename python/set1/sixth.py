@@ -25,6 +25,7 @@ def hammingDist(bStr0, bStr1):
     dist = sum([numberSetBits(val) for val in xors])
     return dist
 
+# Generalized form of Vector Space Modeling? Find the nearest vector to keyspace
 def guessBlockSize(ct):
     keyLen_minDist = [0, sys.maxsize]
     for kl in range(2,41):

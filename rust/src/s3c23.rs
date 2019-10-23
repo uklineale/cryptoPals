@@ -1,15 +1,16 @@
 extern crate rand;
 mod mersenne_twister;
 
+use crate::rand::RngCore;
 use self::mersenne_twister::MersenneTwister64;
-use rand::Rng;
+
 
 fn main() {
     let mut rng = rand::thread_rng();
     let seed = rng.next_u64();
     let mut mt = MersenneTwister64::new(seed);
 
-    const STATE_LEN : usize =  312;
+    const STATE_LEN: usize = 312;
     let mut outputs: [u64; STATE_LEN] = [0; STATE_LEN];
     let mut state: [u64; STATE_LEN] = [0; STATE_LEN];
 
